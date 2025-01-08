@@ -1,3 +1,6 @@
+
+function main() {}
+
 // utils
 function createShader(gl, type, source) {
     let shader = gl.createShader(type);
