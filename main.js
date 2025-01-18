@@ -1,5 +1,27 @@
+// plane shaders
+const vertSrc = `#verision 300 es
+precision mediump float;
+in vec3 a_pos;
+uniform mat4 u_model;
+uniform mat4 u_view;
+uniform mat4 u_proj;
 
-function main() {}
+void main() {
+    gl_Position = u_proj * u_view * u_model * vec4(a_pos, 1.0);
+}
+`;
+
+const fragSrc = `#version 300 es
+precision mediump float;
+
+void main() {
+    outColor = vec4(1,0,0,1);
+}
+`;
+
+function main() {};
+
+function makePath() {};
 
 // utils
 function createShader(gl, type, source) {
