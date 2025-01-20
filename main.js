@@ -135,8 +135,9 @@ function main() {
 
     let planeModel = mat4.create();
     let cubeModel = mat4.create();
-    mat4.translate(cubeModel, cubeModel, [1,1,-1]);
+    mat4.translate(cubeModel, cubeModel, [0,0,1]);
     mat4.rotateY(cubeModel, cubeModel, Math.PI / 5);
+    mat4.scale(cubeModel, cubeModel, [0.5,0.5,0.5]);
 
     let view = mat4.create();
     mat4.lookAt(view, [0, 0, 9], [0, 0, 0], [0, 1, 0]);
@@ -192,6 +193,10 @@ function createProgram(gl, vertShader, fragShader) {
     if (success) return program;
     console.log(gl.getProgramInfoLog(program));
     gl.deleteProgram(program);
+}
+
+function getNormal(model) {
+    // @todo
 }
 
 main();
