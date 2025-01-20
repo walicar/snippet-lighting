@@ -15,8 +15,9 @@ const planeVertData = [
 ]
 
 // plane shaders
-const planeVertSrc = `#verision 300 es
+const planeVertSrc = `#version 300 es
 precision mediump float;
+
 in vec3 a_pos;
 uniform mat4 u_model;
 uniform mat4 u_view;
@@ -30,14 +31,18 @@ void main() {
 const planeFragSrc = `#version 300 es
 precision mediump float;
 
+out vec4 outColor;
+
 void main() {
-    outColor = vec4(1,0,0,1);
+    outColor = vec4(1.0,0.0,0.0,1.0);
 }
 `;
 
 function main() {
     // make program and compile shaders
     const canvas = document.createElement("canvas");
+    canvas.width = 500;
+    canvas.height = 500;
     root.appendChild(canvas);
     const gl = canvas.getContext("webgl2");
     if (!gl) {
@@ -75,7 +80,7 @@ function main() {
 
     let model = mat4.create();
     let view = mat4.create();
-    mat4.lookAt(view, [1,3,0], [0,0,0], [0,1,0]);
+    mat4.lookAt(view, [0,0,9], [0,0,0], [0,1,0]);
 
     let proj = mat4.create();
     mat4.perspective(proj, Math.PI/4, canvas.width/canvas.height, 0.1, 100);
@@ -86,9 +91,9 @@ function main() {
         gl.bindVertexArray(planeVao);
         gl.useProgram(planeProgram);
 
-        gl.uniformMatrix4v(modelUniformLocPlane, model);
-        gl.uniformMatrix4v(viewUniformLocPlane, view);
-        gl.uniformMatrix4v(projUniformLocPlane, proj);
+        gl.uniformMatrix4fv(modelUniformLocPlane, false, model);
+        gl.uniformMatrix4fv(viewUniformLocPlane, false, view);
+        gl.uniformMatrix4fv(projUniformLocPlane, false, proj);
 
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
         requestAnimationFrame(loop);
@@ -119,3 +124,5 @@ function createProgram(gl, vertShader, fragShader) {
     console.log(gl.getProgramInfoLog(program));
     gl.deleteProgram(program);
 }
+
+main();
