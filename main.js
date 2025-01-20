@@ -151,6 +151,9 @@ function main() {
     function loop() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        gl.uniformMatrix4fv(viewUniformLoc, false, view);
+        gl.uniformMatrix4fv(projUniformLoc, false, proj);
+
         // draw plane
         gl.bindVertexArray(planeVao);
         gl.uniformMatrix4fv(modelUniformLoc, false, planeModel);
@@ -162,10 +165,7 @@ function main() {
         gl.uniformMatrix4fv(modelUniformLoc, false, cubeModel);
         gl.uniform4fv(colorUniformLoc, cubeColor);
         gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0);
-
-        gl.uniformMatrix4fv(viewUniformLoc, false, view);
-        gl.uniformMatrix4fv(projUniformLoc, false, proj);
-
+        
         requestAnimationFrame(loop);
     }
     loop();
