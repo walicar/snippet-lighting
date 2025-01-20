@@ -39,7 +39,7 @@ function main() {
     // make program and compile shaders
     const canvas = document.createElement("canvas");
     root.appendChild(canvas);
-    const gl = canvas.getContent("webgl2");
+    const gl = canvas.getContext("webgl2");
     if (!gl) {
         canvas.textContent = "WebGL is not supported";
         return;
@@ -71,7 +71,7 @@ function main() {
     gl.clearColor(0,0,0,0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
-    gl.useProgram(program);
+    gl.useProgram(planeProgram);
 
     let model = mat4.create();
     let view = mat4.create();
@@ -81,9 +81,19 @@ function main() {
     mat4.perspective(proj, Math.PI/4, canvas.width/canvas.height, 0.1, 100);
 
     function loop() {
-        // @todo
-    }
+        // draw plane
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.bindVertexArray(planeVao);
+        gl.useProgram(planeProgram);
 
+        gl.uniformMatrix4v(modelUniformLocPlane, model);
+        gl.uniformMatrix4v(viewUniformLocPlane, view);
+        gl.uniformMatrix4v(projUniformLocPlane, proj);
+
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+        requestAnimationFrame(loop);
+    }
+    loop();
 };
 
 function makePath() {};
