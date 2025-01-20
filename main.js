@@ -73,17 +73,17 @@ function main() {
 
     // start drawing
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0,0,0,0);
+    gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
     gl.useProgram(planeProgram);
 
     let model = mat4.create();
     let view = mat4.create();
-    mat4.lookAt(view, [0,0,9], [0,0,0], [0,1,0]);
+    mat4.lookAt(view, [0, 0, 9], [0, 0, 0], [0, 1, 0]);
 
     let proj = mat4.create();
-    mat4.perspective(proj, Math.PI/4, canvas.width/canvas.height, 0.1, 100);
+    mat4.perspective(proj, Math.PI / 4, canvas.width / canvas.height, 0.1, 100);
 
     function loop() {
         // draw plane
@@ -101,7 +101,7 @@ function main() {
     loop();
 };
 
-function makePath() {};
+function makePath() { };
 
 // utils
 function createShader(gl, type, source) {
