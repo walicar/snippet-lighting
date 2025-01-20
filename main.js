@@ -148,20 +148,18 @@ function main() {
     const cubeColor = [0.0,1.0,0.0,1.0];
 
     function loop() {
-        // draw plane
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        gl.bindVertexArray(planeVao);
 
+        // draw plane
+        gl.bindVertexArray(planeVao);
         gl.uniformMatrix4fv(modelUniformLoc, false, planeModel);
         gl.uniform4fv(colorUniformLoc, planeColor);
-
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
         // draw cube
         gl.bindVertexArray(cubeVao);
         gl.uniformMatrix4fv(modelUniformLoc, false, cubeModel);
         gl.uniform4fv(colorUniformLoc, cubeColor);
-
         gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0);
 
         gl.uniformMatrix4fv(viewUniformLoc, false, view);
