@@ -14,6 +14,12 @@ const planeVertData = [
     1.0, 1.0, 0.0,
 ]
 
+const planeNormalData = [
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+]
 
 // cube vertices
 const cubeVertData = [ // 8 corners on a cube
@@ -23,8 +29,8 @@ const cubeVertData = [ // 8 corners on a cube
     1.0, 1.0, -1.0,
     1.0, 1.0, 1.0,
     // lower half
-    -1.0,-1.0, 1.0,
-    -1.0,-1.0, -1.0,
+    -1.0, -1.0, 1.0,
+    -1.0, -1.0, -1.0,
     1.0, -1.0, -1.0,
     1.0, -1.0, 1.0,
 ]
@@ -50,28 +56,69 @@ const cubeIndices = [ // vertex order matters (winding)
     3, 6, 7
 ];
 
+const cubeNormalData = [
+    // top face
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    // bottom face
+    0.0, -1.0, 0.0,
+    0.0, -1.0, 0.0,
+    0.0, -1.0, 0.0,
+    0.0, -1.0, 0.0,
+    // front face
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
+    // back face
+    0.0, 0.0, -1.0,
+    0.0, 0.0, -1.0,
+    0.0, 0.0, -1.0,
+    0.0, 0.0, -1.0,
+    // left face
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
+    // right face
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+]
+
 // shaders
 const vertSrc = `#version 300 es
 precision mediump float;
 
 in vec3 a_pos;
+in vec3 a_norm;
+
 uniform mat4 u_model;
 uniform mat4 u_view;
 uniform mat4 u_proj;
 
+out vec3 v_norm;
+
 void main() {
     gl_Position = u_proj * u_view * u_model * vec4(a_pos, 1.0);
+    v_norm = a_norm;
 }
 `;
 
 const fragSrc = `#version 300 es
 precision mediump float;
 
+in vec3 v_norm;
+
 uniform vec4 u_color;
-out vec4 outColor;
+
+out vec4 color;
 
 void main() {
-    outColor = u_color;
+    color = u_color;
 }
 `;
 
@@ -102,20 +149,28 @@ function main() {
     const planeVao = gl.createVertexArray();
     gl.bindVertexArray(planeVao);
 
-    let buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    let vertBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(planeVertData), gl.STATIC_DRAW);
 
     let posAttribLoc = gl.getAttribLocation(program, "a_pos");
     gl.enableVertexAttribArray(posAttribLoc);
     gl.vertexAttribPointer(posAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
 
+    let normBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(planeNormalData), gl.STATIC_DRAW);
+
+    let normAttribLoc = gl.getAttribLocation(program, "a_norm");
+    gl.enableVertexAttribArray(normAttribLoc);
+    gl.vertexAttribPointer(normAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
+
     // cube
     const cubeVao = gl.createVertexArray();
     gl.bindVertexArray(cubeVao);
 
-    buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    vertBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeVertData), gl.STATIC_DRAW);
 
     let indexBuffer = gl.createBuffer();
@@ -126,6 +181,14 @@ function main() {
     gl.enableVertexAttribArray(posAttribLoc);
     gl.vertexAttribPointer(posAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
 
+    normBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeNormalData), gl.STATIC_DRAW);
+
+    normAttribLoc = gl.getAttribLocation(program, "a_norm");
+    gl.enableVertexAttribArray(normAttribLoc);
+    gl.vertexAttribPointer(normAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
+
     // start drawing
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0, 0, 0, 0);
@@ -135,9 +198,9 @@ function main() {
 
     let planeModel = mat4.create();
     let cubeModel = mat4.create();
-    mat4.translate(cubeModel, cubeModel, [0,0,1]);
+    mat4.translate(cubeModel, cubeModel, [0, 0, 1]);
     mat4.rotateY(cubeModel, cubeModel, Math.PI / 5);
-    mat4.scale(cubeModel, cubeModel, [0.5,0.5,0.5]);
+    mat4.scale(cubeModel, cubeModel, [0.5, 0.5, 0.5]);
 
     let view = mat4.create();
     mat4.lookAt(view, [0, 0, 9], [0, 0, 0], [0, 1, 0]);
@@ -145,8 +208,8 @@ function main() {
     let proj = mat4.create();
     mat4.perspective(proj, Math.PI / 4, canvas.width / canvas.height, 0.1, 100);
 
-    const planeColor = [1.0,0.0,0.0,1.0];
-    const cubeColor = [0.0,1.0,0.0,1.0];
+    const planeColor = [1.0, 0.0, 0.0, 1.0];
+    const cubeColor = [0.0, 1.0, 0.0, 1.0];
 
     function loop() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -165,7 +228,7 @@ function main() {
         gl.uniformMatrix4fv(modelUniformLoc, false, cubeModel);
         gl.uniform4fv(colorUniformLoc, cubeColor);
         gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0);
-        
+
         requestAnimationFrame(loop);
     }
     loop();
