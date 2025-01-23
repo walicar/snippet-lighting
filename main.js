@@ -56,38 +56,19 @@ const cubeIndices = [ // vertex order matters (winding)
     3, 6, 7
 ];
 
+// use averaged normals for each vertex
 const cubeNormalData = [
-    // top face
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    // bottom face
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    // front face
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-    // back face
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    // left face
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    // right face
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-]
+    // upper half
+    -0.57735,  0.57735,  0.57735,
+    -0.57735,  0.57735, -0.57735,
+     0.57735,  0.57735, -0.57735,
+     0.57735,  0.57735,  0.57735,
+    // lower half
+    -0.57735, -0.57735,  0.57735,
+    -0.57735, -0.57735, -0.57735,
+     0.57735, -0.57735, -0.57735,
+     0.57735, -0.57735,  0.57735,
+  ];
 
 // shaders
 const vertSrc = `#version 300 es
@@ -99,26 +80,32 @@ in vec3 a_norm;
 uniform mat4 u_model;
 uniform mat4 u_view;
 uniform mat4 u_proj;
+uniform mat4 u_normMatrix;
 
 out vec3 v_norm;
 
 void main() {
     gl_Position = u_proj * u_view * u_model * vec4(a_pos, 1.0);
-    v_norm = a_norm;
+    v_norm = mat3(u_normMatrix) * a_norm;
 }
 `;
 
+// u_lightVec is the reversed light direction
 const fragSrc = `#version 300 es
 precision mediump float;
 
 in vec3 v_norm;
 
+uniform vec3 u_lightVec;
 uniform vec4 u_color;
 
 out vec4 color;
 
 void main() {
+    float light = dot(normalize(v_norm), normalize(u_lightVec));
+
     color = u_color;
+    color.rgb *= light;
 }
 `;
 
@@ -143,6 +130,8 @@ function main() {
     const viewUniformLoc = gl.getUniformLocation(program, "u_view");
     const projUniformLoc = gl.getUniformLocation(program, "u_proj");
     const colorUniformLoc = gl.getUniformLocation(program, "u_color");
+    const normMatrixUniformLoc = gl.getUniformLocation(program, "u_normMatrix");
+    const lightVecUniformLoc = gl.getUniformLocation(program, "u_lightVec");
 
     // make VBOs, and VAOs
     // plane
@@ -197,10 +186,21 @@ function main() {
     gl.useProgram(program);
 
     let planeModel = mat4.create();
+    mat4.rotateY(planeModel, planeModel, Math.PI / 5);
+    mat4.rotateX(planeModel, planeModel, -Math.PI / 5);
+
     let cubeModel = mat4.create();
-    mat4.translate(cubeModel, cubeModel, [0, 0, 1]);
-    mat4.rotateY(cubeModel, cubeModel, Math.PI / 5);
-    mat4.scale(cubeModel, cubeModel, [0.5, 0.5, 0.5]);
+    mat4.translate(cubeModel, cubeModel, [0, 1, 1]);
+    mat4.rotateX(cubeModel, cubeModel, Math.PI / 5);
+    mat4.rotateZ(cubeModel, cubeModel, Math.PI / 5);
+
+    let planeNormalMatrix = mat4.create();
+    mat4.invert(planeNormalMatrix, planeModel);
+    mat4.transpose(planeNormalMatrix, planeNormalMatrix);
+
+    let cubeNormalMatrix = mat4.create();
+    mat4.invert(cubeNormalMatrix, cubeModel);
+    mat4.transpose(cubeNormalMatrix, cubeNormalMatrix);
 
     let view = mat4.create();
     mat4.lookAt(view, [0, 0, 9], [0, 0, 0], [0, 1, 0]);
@@ -216,16 +216,19 @@ function main() {
 
         gl.uniformMatrix4fv(viewUniformLoc, false, view);
         gl.uniformMatrix4fv(projUniformLoc, false, proj);
+        gl.uniform3fv(lightVecUniformLoc, [0, 1, 1])
 
         // draw plane
         gl.bindVertexArray(planeVao);
         gl.uniformMatrix4fv(modelUniformLoc, false, planeModel);
+        gl.uniformMatrix4fv(normMatrixUniformLoc, false, planeNormalMatrix);
         gl.uniform4fv(colorUniformLoc, planeColor);
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
         // draw cube
         gl.bindVertexArray(cubeVao);
         gl.uniformMatrix4fv(modelUniformLoc, false, cubeModel);
+        gl.uniformMatrix4fv(normMatrixUniformLoc, false, cubeNormalMatrix);
         gl.uniform4fv(colorUniformLoc, cubeColor);
         gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0);
 
