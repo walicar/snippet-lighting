@@ -162,14 +162,8 @@ function main() {
 
     const cubeColor = [0.0, 1.0, 0.0, 1.0];
 
-    let local = vec4.fromValues(0, 0, 0, 1);
-    vec4.transformMat4(local, local, cubeModel);
-
-    let axis = Array.from(local);
-    axis.pop();
-
     slider.addEventListener("input", () => {
-        mat4.rotate(view, view, slider.value / (slider.max / 3.14), axis);
+        mat4.rotate(view, view, slider.value / slider.max, [0,1,0]);
     })
 
     function loop() {
