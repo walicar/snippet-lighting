@@ -92,6 +92,7 @@ void main() {
 
 function main() {
     // make program and compile shaders
+    const { slider } = setupUI(root);
     const canvas = document.createElement("canvas");
     canvas.width = 500;
     canvas.height = 500;
@@ -162,6 +163,10 @@ function main() {
 
     const cubeColor = [0.0, 1.0, 0.0, 1.0];
 
+    slider.addEventListener("input", () => {
+        mat4.rotateY(view, view, slider.value / (slider.max / 3.14 ));
+    })
+
     function loop() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -213,6 +218,7 @@ function setupUI(root) {
     slider.style.position = "absolute";
     slider.style.zIndex = 1;
     root.appendChild(slider);
+    return { slider: slider };
 }
 
 main();
