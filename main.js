@@ -203,4 +203,16 @@ function createProgram(gl, vertShader, fragShader) {
     gl.deleteProgram(program);
 }
 
+function setupUI(root) {
+    const slider = document.createElement("input");
+    slider.type = "range";
+    const samples = 50;
+    slider.min = -samples;
+    slider.max = samples;
+    slider.value = 0;
+    slider.style.position = "absolute";
+    slider.style.zIndex = 1;
+    root.appendChild(slider);
+}
+
 main();
