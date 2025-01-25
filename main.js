@@ -2,25 +2,6 @@ import { mat4 } from "gl-matrix";
 
 const root = document.getElementById("snippet-1");
 
-// plane vertices
-const planeVertData = [
-    // bottom right
-    1.0, -1.0, 0.0,
-    // bottom left
-    -1.0, -1.0, 0.0,
-    // top left
-    -1.0, 1.0, 0.0,
-    // top right
-    1.0, 1.0, 0.0,
-]
-
-const planeNormalData = [
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-]
-
 // cube vertices
 const cubeVertData = [ // 8 corners on a cube
     // upper half
@@ -134,31 +115,10 @@ function main() {
     const lightVecUniformLoc = gl.getUniformLocation(program, "u_lightVec");
 
     // make VBOs, and VAOs
-    // plane
-    const planeVao = gl.createVertexArray();
-    gl.bindVertexArray(planeVao);
-
-    let vertBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(planeVertData), gl.STATIC_DRAW);
-
-    let posAttribLoc = gl.getAttribLocation(program, "a_pos");
-    gl.enableVertexAttribArray(posAttribLoc);
-    gl.vertexAttribPointer(posAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
-
-    let normBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, normBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(planeNormalData), gl.STATIC_DRAW);
-
-    let normAttribLoc = gl.getAttribLocation(program, "a_norm");
-    gl.enableVertexAttribArray(normAttribLoc);
-    gl.vertexAttribPointer(normAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
-
-    // cube
     const cubeVao = gl.createVertexArray();
     gl.bindVertexArray(cubeVao);
 
-    vertBuffer = gl.createBuffer();
+    let vertBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeVertData), gl.STATIC_DRAW);
 
@@ -166,15 +126,15 @@ function main() {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeIndices), gl.STATIC_DRAW);
 
-    posAttribLoc = gl.getAttribLocation(program, "a_pos");
+    let posAttribLoc = gl.getAttribLocation(program, "a_pos");
     gl.enableVertexAttribArray(posAttribLoc);
     gl.vertexAttribPointer(posAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
 
-    normBuffer = gl.createBuffer();
+    let normBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, normBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeNormalData), gl.STATIC_DRAW);
 
-    normAttribLoc = gl.getAttribLocation(program, "a_norm");
+    let normAttribLoc = gl.getAttribLocation(program, "a_norm");
     gl.enableVertexAttribArray(normAttribLoc);
     gl.vertexAttribPointer(normAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
 
@@ -185,18 +145,10 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.useProgram(program);
 
-    let planeModel = mat4.create();
-    mat4.rotateY(planeModel, planeModel, Math.PI / 5);
-    mat4.rotateX(planeModel, planeModel, -Math.PI / 5);
-
     let cubeModel = mat4.create();
-    mat4.translate(cubeModel, cubeModel, [0, 1, 1]);
+    mat4.translate(cubeModel, cubeModel, [0, 1, -3]);
     mat4.rotateX(cubeModel, cubeModel, Math.PI / 5);
     mat4.rotateZ(cubeModel, cubeModel, Math.PI / 5);
-
-    let planeNormalMatrix = mat4.create();
-    mat4.invert(planeNormalMatrix, planeModel);
-    mat4.transpose(planeNormalMatrix, planeNormalMatrix);
 
     let cubeNormalMatrix = mat4.create();
     mat4.invert(cubeNormalMatrix, cubeModel);
@@ -208,7 +160,6 @@ function main() {
     let proj = mat4.create();
     mat4.perspective(proj, Math.PI / 4, canvas.width / canvas.height, 0.1, 100);
 
-    const planeColor = [1.0, 0.0, 0.0, 1.0];
     const cubeColor = [0.0, 1.0, 0.0, 1.0];
 
     function loop() {
@@ -217,13 +168,6 @@ function main() {
         gl.uniformMatrix4fv(viewUniformLoc, false, view);
         gl.uniformMatrix4fv(projUniformLoc, false, proj);
         gl.uniform3fv(lightVecUniformLoc, [0, 1, 1])
-
-        // draw plane
-        gl.bindVertexArray(planeVao);
-        gl.uniformMatrix4fv(modelUniformLoc, false, planeModel);
-        gl.uniformMatrix4fv(normMatrixUniformLoc, false, planeNormalMatrix);
-        gl.uniform4fv(colorUniformLoc, planeColor);
-        gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
         // draw cube
         gl.bindVertexArray(cubeVao);
