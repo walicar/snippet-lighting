@@ -1,4 +1,4 @@
-import { mat4 } from "gl-matrix";
+import { mat4, vec4 } from "gl-matrix";
 
 const root = document.getElementById("snippet-1");
 
@@ -147,7 +147,6 @@ function main() {
     gl.useProgram(program);
 
     let cubeModel = mat4.create();
-    mat4.translate(cubeModel, cubeModel, [0, 1, -3]);
     mat4.rotateX(cubeModel, cubeModel, Math.PI / 5);
     mat4.rotateZ(cubeModel, cubeModel, Math.PI / 5);
 
@@ -163,8 +162,14 @@ function main() {
 
     const cubeColor = [0.0, 1.0, 0.0, 1.0];
 
+    let local = vec4.fromValues(0, 0, 0, 1);
+    vec4.transformMat4(local, local, cubeModel);
+
+    let axis = Array.from(local);
+    axis.pop();
+
     slider.addEventListener("input", () => {
-        mat4.rotateY(view, view, slider.value / (slider.max / 3.14 ));
+        mat4.rotate(view, view, slider.value / (slider.max / 3.14), axis);
     })
 
     function loop() {
