@@ -181,8 +181,6 @@ function main() {
     loop();
 };
 
-function makePath() { };
-
 // utils
 function createShader(gl, type, source) {
     let shader = gl.createShader(type);
