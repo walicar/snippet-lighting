@@ -205,8 +205,4 @@ function createProgram(gl, vertShader, fragShader) {
     gl.deleteProgram(program);
 }
 
-function getNormal(model) {
-    // @todo
-}
-
 main();
