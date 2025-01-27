@@ -154,14 +154,19 @@ function main() {
 
     let view = mat4.create();
     mat4.lookAt(view, [0, 0, 9], [0, 0, 0], [0, 1, 0]);
+    let initialView = mat4.clone(view);
 
     let proj = mat4.create();
     mat4.perspective(proj, Math.PI / 4, canvas.width / canvas.height, 0.1, 100);
 
     const cubeColor = [0.0, 1.0, 0.0, 1.0];
 
+    // avoid cumulative shift
     slider.addEventListener("input", () => {
-        mat4.rotate(view, view, slider.value / slider.max, [0,1,0]);
+        mat4.copy(view, initialView);
+        const angle = (slider.value / slider.max) * Math.PI * 2;
+        mat4.rotate(view, view, angle, [0,1,0]);
+        loop();
     })
 
     function loop() {
