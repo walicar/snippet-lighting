@@ -61,13 +61,12 @@ in vec3 a_norm;
 uniform mat4 u_model;
 uniform mat4 u_view;
 uniform mat4 u_proj;
-uniform mat4 u_normMatrix;
 
 out vec3 v_norm;
 
 void main() {
     gl_Position = u_proj * u_view * u_model * vec4(a_pos, 1.0);
-    v_norm = mat3(u_normMatrix) * a_norm;
+    v_norm = a_norm;
 }
 `;
 
@@ -112,7 +111,6 @@ function main() {
     const viewUniformLoc = gl.getUniformLocation(program, "u_view");
     const projUniformLoc = gl.getUniformLocation(program, "u_proj");
     const colorUniformLoc = gl.getUniformLocation(program, "u_color");
-    const normMatrixUniformLoc = gl.getUniformLocation(program, "u_normMatrix");
     const lightVecUniformLoc = gl.getUniformLocation(program, "u_lightVec");
 
     // make VBOs, and VAOs
@@ -176,7 +174,6 @@ function main() {
         // draw cube
         gl.bindVertexArray(cubeVao);
         gl.uniformMatrix4fv(modelUniformLoc, false, cubeModel);
-        gl.uniformMatrix4fv(normMatrixUniformLoc, false, cubeNormalMatrix);
         gl.uniform4fv(colorUniformLoc, cubeColor);
         gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0);
 
