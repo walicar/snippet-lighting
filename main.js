@@ -66,7 +66,7 @@ out vec3 v_norm;
 
 void main() {
     gl_Position = u_proj * u_view * u_model * vec4(a_pos, 1.0);
-    v_norm = a_norm;
+    v_norm = mat3(u_model) * a_norm;
 }
 `;
 
@@ -147,6 +147,7 @@ function main() {
     let cubeModel = mat4.create();
     mat4.rotateX(cubeModel, cubeModel, Math.PI / 5);
     mat4.rotateZ(cubeModel, cubeModel, Math.PI / 5);
+    let initialModel = mat4.clone(cubeModel);
 
     let cubeNormalMatrix = mat4.create();
     mat4.invert(cubeNormalMatrix, cubeModel);
@@ -154,7 +155,6 @@ function main() {
 
     let view = mat4.create();
     mat4.lookAt(view, [0, 0, 9], [0, 0, 0], [0, 1, 0]);
-    let initialView = mat4.clone(view);
 
     let proj = mat4.create();
     mat4.perspective(proj, Math.PI / 4, canvas.width / canvas.height, 0.1, 100);
@@ -163,9 +163,9 @@ function main() {
 
     // avoid cumulative shift
     slider.addEventListener("input", () => {
-        mat4.copy(view, initialView);
+        mat4.copy(cubeModel, initialModel);
         const angle = (slider.value / slider.max) * Math.PI * 2;
-        mat4.rotate(view, view, angle, [0,1,0]);
+        mat4.rotate(cubeModel, cubeModel, angle, [0,1,0]);
         loop();
     })
 
@@ -181,8 +181,6 @@ function main() {
         gl.uniformMatrix4fv(modelUniformLoc, false, cubeModel);
         gl.uniform4fv(colorUniformLoc, cubeColor);
         gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0);
-
-        requestAnimationFrame(loop);
     }
     loop();
 };
