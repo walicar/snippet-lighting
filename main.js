@@ -91,7 +91,7 @@ void main() {
 
 function main() {
     // make program and compile shaders
-    const { slider } = setupUI(root);
+    const { slider, lightSlider } = setupUI(root);
     const canvas = document.createElement("canvas");
     canvas.width = 500;
     canvas.height = 500;
@@ -169,12 +169,23 @@ function main() {
         loop();
     })
 
+    let initialLightVec = [0, 1, 1];
+    let lightVec = Array.from(initialLightVec);
+
+    lightSlider.addEventListener("input", () => {
+        const yDistance = (lightSlider.value / lightSlider.max) * 4;
+        console.log(yDistance)
+        lightVec = Array.from(initialLightVec);
+        lightVec[1] += yDistance
+        loop();
+    })
+
     function loop() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.uniformMatrix4fv(viewUniformLoc, false, view);
         gl.uniformMatrix4fv(projUniformLoc, false, proj);
-        gl.uniform3fv(lightVecUniformLoc, [0, 1, 1])
+        gl.uniform3fv(lightVecUniformLoc, lightVec)
 
         // draw cube
         gl.bindVertexArray(cubeVao);
@@ -217,7 +228,18 @@ function setupUI(root) {
     slider.style.position = "absolute";
     slider.style.zIndex = 1;
     root.appendChild(slider);
-    return { slider: slider };
+
+    const lightSlider = document.createElement("input");
+    lightSlider.type = "range";
+    lightSlider.min = -samples;
+    lightSlider.max = samples;
+    lightSlider.value = 0;
+    lightSlider.style.position = "absolute";
+    lightSlider.style.top = "50px";
+    lightSlider.style.zIndex = 1;
+    root.appendChild(lightSlider);
+
+    return { slider: slider , lightSlider: lightSlider };
 }
 
 main();
