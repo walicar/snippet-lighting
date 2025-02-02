@@ -174,13 +174,13 @@ function main() {
 
     lightSlider.addEventListener("input", () => {
         const yDistance = (lightSlider.value / lightSlider.max) * 4;
-        console.log(yDistance)
         lightVec = Array.from(initialLightVec);
         lightVec[1] += yDistance
         draw();
     })
 
     function draw() {
+        gl.clearColor(0, 0, 0, 0.5);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.uniformMatrix4fv(viewUniformLoc, false, view);
