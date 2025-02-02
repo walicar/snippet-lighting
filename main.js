@@ -166,7 +166,7 @@ function main() {
         mat4.copy(cubeModel, initialModel);
         const angle = (slider.value / slider.max) * Math.PI * 2;
         mat4.rotate(cubeModel, cubeModel, angle, [0,1,0]);
-        loop();
+        draw();
     })
 
     let initialLightVec = [0, 1, 1];
@@ -177,10 +177,10 @@ function main() {
         console.log(yDistance)
         lightVec = Array.from(initialLightVec);
         lightVec[1] += yDistance
-        loop();
+        draw();
     })
 
-    function loop() {
+    function draw() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.uniformMatrix4fv(viewUniformLoc, false, view);
@@ -193,7 +193,7 @@ function main() {
         gl.uniform4fv(colorUniformLoc, cubeColor);
         gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0);
     }
-    loop();
+    draw();
 };
 
 // utils
