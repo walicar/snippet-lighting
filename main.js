@@ -165,7 +165,7 @@ function main() {
     slider.addEventListener("input", () => {
         mat4.copy(cubeModel, initialModel);
         const angle = (slider.value / slider.max) * Math.PI * 2;
-        mat4.rotate(cubeModel, cubeModel, angle, [0,1,0]);
+        mat4.rotate(cubeModel, cubeModel, angle, [0, 1, 0]);
         draw();
     })
 
@@ -239,7 +239,7 @@ function setupUI(root) {
     lightSlider.style.zIndex = 1;
     root.appendChild(lightSlider);
 
-    return { slider: slider , lightSlider: lightSlider };
+    return { slider: slider, lightSlider: lightSlider };
 }
 
 main();
