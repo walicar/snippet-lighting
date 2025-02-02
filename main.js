@@ -66,7 +66,7 @@ out vec3 v_norm;
 
 void main() {
     gl_Position = u_proj * u_view * u_model * vec4(a_pos, 1.0);
-    v_norm = mat3(u_model) * a_norm;
+    v_norm = transpose(inverse(mat3(u_model))) * a_norm;
 }
 `;
 
