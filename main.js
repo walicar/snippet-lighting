@@ -82,7 +82,7 @@ uniform vec4 u_color;
 out vec4 color;
 
 void main() {
-    float light = dot(normalize(v_norm), normalize(u_lightVec));
+    float light = dot(normalize(v_norm), normalize(-u_lightVec));
 
     color = u_color;
     color.rgb *= light;
@@ -169,7 +169,7 @@ function main() {
         draw();
     })
 
-    let initialLightVec = [0, 1, 1];
+    let initialLightVec = [0, -1, -1];
     let lightVec = Array.from(initialLightVec);
 
     lightSlider.addEventListener("input", () => {
