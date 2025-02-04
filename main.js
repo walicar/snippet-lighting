@@ -144,10 +144,11 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.useProgram(program);
 
+    let scale = [1.0, 1.0, 1.5]
     let cubeModel = mat4.create();
     mat4.rotateX(cubeModel, cubeModel, Math.PI / 5);
     mat4.rotateZ(cubeModel, cubeModel, Math.PI / 5);
-    let initialModel = mat4.clone(cubeModel);
+    mat4.scale(cubeModel, cubeModel, scale);
 
     let view = mat4.create();
     mat4.lookAt(view, [0, 0, 9], [0, 0, 0], [0, 1, 0]);
@@ -159,9 +160,13 @@ function main() {
 
     // avoid cumulative shift
     slider.addEventListener("input", () => {
-        mat4.copy(cubeModel, initialModel);
+        let newCubeModel = mat4.create();
         const angle = (slider.value / slider.max) * Math.PI * 2;
-        mat4.rotate(cubeModel, cubeModel, angle, [0, 1, 0]);
+        mat4.rotate(newCubeModel, newCubeModel, angle, [0, 1, 0]);
+        mat4.rotateX(newCubeModel, newCubeModel, Math.PI / 5);
+        mat4.rotateZ(newCubeModel, newCubeModel, Math.PI / 5);
+        mat4.scale(newCubeModel, newCubeModel, scale);
+        cubeModel = newCubeModel
         draw();
     })
 
