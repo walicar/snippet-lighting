@@ -149,10 +149,6 @@ function main() {
     mat4.rotateZ(cubeModel, cubeModel, Math.PI / 5);
     let initialModel = mat4.clone(cubeModel);
 
-    let cubeNormalMatrix = mat4.create();
-    mat4.invert(cubeNormalMatrix, cubeModel);
-    mat4.transpose(cubeNormalMatrix, cubeNormalMatrix);
-
     let view = mat4.create();
     mat4.lookAt(view, [0, 0, 9], [0, 0, 0], [0, 1, 0]);
 
