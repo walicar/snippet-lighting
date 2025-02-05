@@ -2,53 +2,40 @@ import { mat4 } from "gl-matrix";
 
 const root = document.getElementById("snippet-1");
 
-// cube vertices
-const cubeVertData = [ // 8 corners on a cube
-    // upper half
-    -1.0, 1.0, 1.0,
-    -1.0, 1.0, -1.0,
-    1.0, 1.0, -1.0,
-    1.0, 1.0, 1.0,
-    // lower half
-    -1.0, -1.0, 1.0,
-    -1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0,
-    1.0, -1.0, 1.0,
-]
-
-const cubeIndices = [ // vertex order matters (winding)
-    // top face
-    0, 1, 2,
-    0, 2, 3,
-    // bottom face
-    4, 5, 6,
-    4, 6, 7,
-    // front face
-    0, 3, 7,
-    0, 7, 4,
-    // back face
-    1, 5, 6,
-    1, 6, 2,
-    // left face
-    0, 4, 5,
-    0, 5, 1,
-    // right face
-    3, 2, 6,
-    3, 6, 7
+const cubeVertData = [
+    -1.0,  1.0,  1.0,   0, 1, 0,    // top face
+    -1.0,  1.0, -1.0,   0, 1, 0,  
+     1.0,  1.0, -1.0,   0, 1, 0,  
+     1.0,  1.0,  1.0,   0, 1, 0,  
+    -1.0, -1.0,  1.0,   0, -1, 0,   // bottom face
+    -1.0, -1.0, -1.0,   0, -1, 0,  
+     1.0, -1.0, -1.0,   0, -1, 0,  
+     1.0, -1.0,  1.0,   0, -1, 0,  
+    -1.0,  1.0,  1.0,   0, 0, 1,    // front face
+     1.0,  1.0,  1.0,   0, 0, 1,  
+     1.0, -1.0,  1.0,   0, 0, 1,  
+    -1.0, -1.0,  1.0,   0, 0, 1,  
+    -1.0,  1.0, -1.0,   0, 0, -1,   // back face
+     1.0,  1.0, -1.0,   0, 0, -1,  
+     1.0, -1.0, -1.0,   0, 0, -1,  
+    -1.0, -1.0, -1.0,   0, 0, -1,  
+    -1.0,  1.0, -1.0,  -1, 0, 0,    // left face
+    -1.0,  1.0,  1.0,  -1, 0, 0,  
+    -1.0, -1.0,  1.0,  -1, 0, 0,  
+    -1.0, -1.0, -1.0,  -1, 0, 0,  
+     1.0,  1.0, -1.0,   1, 0, 0,    // right face
+     1.0,  1.0,  1.0,   1, 0, 0,  
+     1.0, -1.0,  1.0,   1, 0, 0,  
+     1.0, -1.0, -1.0,   1, 0, 0  
 ];
 
-// use averaged normals for each vertex
-const cubeNormalData = [
-    // upper half
-    -0.57735, 0.57735, 0.57735,
-    -0.57735, 0.57735, -0.57735,
-    0.57735, 0.57735, -0.57735,
-    0.57735, 0.57735, 0.57735,
-    // lower half
-    -0.57735, -0.57735, 0.57735,
-    -0.57735, -0.57735, -0.57735,
-    0.57735, -0.57735, -0.57735,
-    0.57735, -0.57735, 0.57735,
+const cubeIndices = [
+    0, 1, 2,  0, 2, 3,      // top face
+    4, 5, 6,  4, 6, 7,      // bottom face
+    8, 9, 10,  8, 10, 11,   // front face
+    12, 13, 14, 12, 14, 15, // back face
+    16, 17, 18, 16, 18, 19, // left face
+    20, 21, 22, 20, 22, 23  // right face
 ];
 
 // shaders
@@ -127,15 +114,11 @@ function main() {
 
     let posAttribLoc = gl.getAttribLocation(program, "a_pos");
     gl.enableVertexAttribArray(posAttribLoc);
-    gl.vertexAttribPointer(posAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
-
-    let normBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, normBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeNormalData), gl.STATIC_DRAW);
-
+    gl.vertexAttribPointer(posAttribLoc, 3, gl.FLOAT, false, 6 * 4, 0);
+    
     let normAttribLoc = gl.getAttribLocation(program, "a_norm");
     gl.enableVertexAttribArray(normAttribLoc);
-    gl.vertexAttribPointer(normAttribLoc, 3, gl.FLOAT, false, 3 * 4, 0);
+    gl.vertexAttribPointer(normAttribLoc, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
 
     // start drawing
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
