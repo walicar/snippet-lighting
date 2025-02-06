@@ -157,7 +157,7 @@ function main() {
     let lightVec = Array.from(initialLightVec);
 
     lightSlider.addEventListener("input", () => {
-        const yDistance = (lightSlider.value / lightSlider.max) * 4;
+        const yDistance = (lightSlider.value / lightSlider.max) * 2;
         lightVec = Array.from(initialLightVec);
         lightVec[1] += yDistance
         draw();
