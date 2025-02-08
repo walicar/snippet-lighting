@@ -1,6 +1,8 @@
 import { mat4 } from "gl-matrix";
 
 const root = document.getElementById("lighting-1");
+root.style.position = "relative";
+root.style.height = "500px";
 
 const cubeVertData = [
     -1.0,  1.0,  1.0,   0, 1, 0,    // top face
